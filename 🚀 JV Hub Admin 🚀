@@ -1,0 +1,1399 @@
+-- =============================================================================
+-- Meu Script ADM ASSINADO: jotinha12hr2
+-- =============================================================================
+
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/1.6.66/main.lua"))()
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TextChatService = game:GetService("TextChatService")
+local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
+local CoreGui = game:GetService("CoreGui")
+
+local EnteredKey = "JV Hub Admin"
+
+local NomesComandos = {
+    [1]="domainexpansion",[2]="removedomain",[3]="backrooms",[4]="kill",
+    [5]="killplus",[6]="kick",[7]="freeze",[8]="unfreeze",
+    [9]="jailup",[10]="jaildown",[11]="jailfront",[12]="jailback",
+    [13]="jailright",[14]="jailleft",[15]="unjail",[16]="god",
+    [17]="ungod",[18]="infjumpon",[19]="infjumpoff",[20]="speed50",
+    [21]="speed100",[22]="speed200",[23]="speednormal",[24]="jump100",
+    [25]="jump300",[26]="jump50",[27]="noclip",[28]="unoclip",
+    [29]="invisible",[30]="visible",[31]="fly",[32]="unfly",
+    [33]="sit",[34]="heal",[35]="fire",[36]="unfire",
+    [37]="sparkle",[38]="unsparkle",[39]="smoke",[40]="unsmoke",
+    [41]="gravity0",[42]="gravity50",[43]="gravitydefault",[44]="lightingmax",
+    [45]="removefog",[46]="night",[47]="day",[48]="sunset",
+    [49]="espon",[50]="espoff",[51]="rainbowon",[52]="rainbowoff",
+    [53]="zoom50",[54]="zoom400",[55]="zoom1000",[56]="fov70",
+    [57]="fov120",[58]="fov90",[59]="optimize",[60]="gettool",
+    [61]="clearbag",[62]="platformlock",[63]="platformunlock",[64]="hiphigh",
+    [65]="hiplow",[66]="explosion",[67]="insertsparkle",[68]="removeclothes",
+    [69]="removeaccessories",[70]="maxhealth",[71]="focuscam",[72]="tpup",
+    [73]="tpdown",[74]="tpfront",[75]="tpback",[76]="lockrotation",
+    [77]="unlockrotation",[78]="timemorning",[79]="timenoon",[80]="timeafternoon",
+    [81]="timemidnight",[82]="pullall",[83]="ghosttranslucent",[84]="ghostsolid",
+    [85]="camclassic",[86]="camfirstperson",[87]="fovnarrow",[88]="fovwide",
+    [89]="fovmicro",[90]="offsetup",[91]="offsetzero",[92]="offsetside",
+    [93]="impulsevertical",[94]="impulsehorizontal",[95]="gyroactive",[96]="gyrostopped",
+    [97]="flashlighton",[98]="flashlightoff",[99]="coreon",[100]="coreoff"
+}
+local IDsPorNome = {}
+for id, nome in pairs(NomesComandos) do IDsPorNome[nome] = id end
+
+local NoclipConnection, InfJumpConnection, Flying, FlyConnection = nil, nil, false, nil
+local ESPAtivo, RainbowCorpse = false, false
+
+local CarregarHubPrincipal
+
+-- KEY SYSTEM
+local function CriarMenuKeyNormal()
+    local ScreenGui = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local Title = Instance.new("TextLabel")
+    local TextBox = Instance.new("TextBox")
+    local Button = Instance.new("TextButton")
+
+    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    ScreenGui.ResetOnSpawn = false
+    Frame.Parent = ScreenGui
+    Frame.BackgroundColor3 = Color3.fromRGB(15, 25, 45)
+    Frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+    Frame.Size = UDim2.new(0, 300, 0, 150)
+    Frame.Active = true; Frame.Draggable = true
+    Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 8)
+
+    Title.Parent = Frame
+    Title.BackgroundTransparency = 1
+    Title.Size = UDim2.new(1, 0, 0, 40)
+    Title.Font = Enum.Font.SourceSansBold
+    Title.Text = "JV HUB ADM - Verificação"
+    Title.TextColor3 = Color3.fromRGB(255,255,255)
+    Title.TextSize = 18
+
+    TextBox.Parent = Frame
+    TextBox.BackgroundColor3 = Color3.fromRGB(25, 45, 75)
+    TextBox.Position = UDim2.new(0.05, 0, 0.35, 0)
+    TextBox.Size = UDim2.new(0.9, 0, 0, 30)
+    TextBox.PlaceholderText = "Insira sua key aqui..."
+    TextBox.Text = ""
+    TextBox.TextColor3 = Color3.fromRGB(255,255,255)
+    TextBox.TextSize = 16
+    Instance.new("UICorner", TextBox).CornerRadius = UDim.new(0, 6)
+
+    Button.Parent = Frame
+    Button.BackgroundColor3 = Color3.fromRGB(0,120,255)
+    Button.Position = UDim2.new(0.2, 0, 0.65, 0)
+    Button.Size = UDim2.new(0.6, 0, 0, 35)
+    Button.Font = Enum.Font.SourceSansBold
+    Button.Text = "Verificar Key"
+    Button.TextColor3 = Color3.fromRGB(255,255,255)
+    Button.TextSize = 16
+    Instance.new("UICorner", Button).CornerRadius = UDim.new(0, 6)
+
+    Button.MouseButton1Click:Connect(function()
+        if TextBox.Text == EnteredKey then
+            ScreenGui:Destroy()
+            CarregarHubPrincipal()
+        else
+            Button.BackgroundColor3 = Color3.fromRGB(0,60,150)
+            Button.Text = "Key Incorreta!"
+            task.wait(1.5)
+            Button.BackgroundColor3 = Color3.fromRGB(0,120,255)
+            Button.Text = "Verificar Key"
+        end
+    end)
+end
+
+CarregarHubPrincipal = function()
+    if getgenv().JVHub_Connections then
+        for _, c in ipairs(getgenv().JVHub_Connections) do pcall(function() c:Disconnect() end) end
+    end
+    getgenv().JVHub_Connections = {}
+    if getgenv().JVHub_Threads then
+        for _, t in ipairs(getgenv().JVHub_Threads) do pcall(function() task.cancel(t) end) end
+    end
+    getgenv().JVHub_Threads = {}
+
+    local function trackConnection(c) table.insert(getgenv().JVHub_Connections, c); return c end
+    local function trackThread(t) table.insert(getgenv().JVHub_Threads, t); return t end
+
+    repeat task.wait() until LocalPlayer.Character
+
+    -- TAGS
+    getgenv().JVHubConfig = {
+        AuthorizedPlayersURL = "https://raw.githubusercontent.com/jotinha0990hr33-stack/Hldhlhlhlhlhlhlh.lua/refs/heads/main/Glogyootosyoot.lua",
+        SpecialTags = {
+            ["jotinha12hr2"] = "Dono JV HUB ADM",
+            ["joakakoakanKkNNmzozjogigig"] = "Dono JV HUB ADM",
+            ["StaffordMakayla783ififogigogog"] = "Dono JV HUB ADM",
+            ["lvushncjcmakglgkglgkgkgrt"] = "Dono JV HUB ADM"
+        }
+    }
+    local ActiveTags = {}
+    local AuthorizedPlayersList = {}
+    pcall(function()
+        local fn = loadstring(game:HttpGet(getgenv().JVHubConfig.AuthorizedPlayersURL))
+        if fn then AuthorizedPlayersList = fn() end
+    end)
+
+    local function IsPlayerAuthorized(playerName)
+        if getgenv().JVHubConfig.SpecialTags[playerName] then return true end
+        if type(AuthorizedPlayersList) ~= "table" then return false end
+        local lowerName = string.lower(tostring(playerName))
+        for _, name in ipairs(AuthorizedPlayersList) do
+            if string.lower(tostring(name)) == lowerName then return true end
+        end
+        return false
+    end
+
+    local function RemovePlayerTag(playerName)
+        if ActiveTags[playerName] then
+            local d = ActiveTags[playerName]
+            if d.Billboard then pcall(function() d.Billboard:Destroy() end) end
+            ActiveTags[playerName] = nil
+        end
+    end
+
+    local function CreatePlayerTag(playerName, tagText)
+        local player = Players:FindFirstChild(playerName)
+        if not player or not player.Character then return end
+        local head = player.Character:FindFirstChild("Head")
+        if not head then return end
+        RemovePlayerTag(playerName)
+        local bb = Instance.new("BillboardGui")
+        bb.Name = "JVHubTag"; bb.Adornee = head
+        bb.Size = UDim2.new(0,150,0,30); bb.AlwaysOnTop = true
+        bb.StudsOffset = Vector3.new(0,2.5,0); bb.MaxDistance = 120
+        bb.Parent = head
+        local f = Instance.new("Frame", bb)
+        f.Size = UDim2.new(1,0,1,0); f.BackgroundColor3 = Color3.new(0,0,0)
+        f.BackgroundTransparency = 0.25; f.BorderSizePixel = 0
+        Instance.new("UICorner", f).CornerRadius = UDim.new(0,6)
+        local tl = Instance.new("TextLabel", f)
+        tl.Size = UDim2.new(1,-8,1,-8); tl.Position = UDim2.new(0,4,0,4)
+        tl.BackgroundTransparency = 1; tl.Text = tagText
+        tl.TextColor3 = Color3.new(1,1,1); tl.TextSize = 12
+        tl.Font = Enum.Font.GothamBold
+        tl.TextStrokeTransparency = 0; tl.TextStrokeColor3 = Color3.new(0,0,0)
+        local st = Instance.new("UIStroke", f)
+        st.Color = Color3.fromRGB(0,150,255); st.Thickness = 1
+        ActiveTags[playerName] = { Billboard = bb, TagText = tl }
+    end
+
+    local function createSpecialTag(player)
+        if not player then return end
+        local function apply()
+            local tagText
+            if getgenv().JVHubConfig.SpecialTags[player.Name] then
+                tagText = getgenv().JVHubConfig.SpecialTags[player.Name]
+            elseif IsPlayerAuthorized(player.Name) then
+                tagText = "Moderador JV HUB ADM"
+            end
+            if tagText then
+                if not ActiveTags[player.Name] or ActiveTags[player.Name].TagText ~= tagText then
+                    CreatePlayerTag(player.Name, tagText)
+                end
+            else RemovePlayerTag(player.Name) end
+        end
+        pcall(apply)
+        player.CharacterAdded:Connect(function() task.wait(0.5); pcall(apply) end)
+    end
+
+    for _, p in pairs(Players:GetPlayers()) do createSpecialTag(p) end
+    trackConnection(Players.PlayerAdded:Connect(createSpecialTag))
+    trackConnection(Players.PlayerRemoving:Connect(function(player) RemovePlayerTag(player.Name) end))
+    trackThread(task.spawn(function()
+        while true do
+            task.wait(15)
+            for _, p in ipairs(Players:GetPlayers()) do
+                if ActiveTags[p.Name] then
+                    pcall(function()
+                        local tagText
+                        if getgenv().JVHubConfig.SpecialTags[p.Name] then
+                            tagText = getgenv().JVHubConfig.SpecialTags[p.Name]
+                        elseif IsPlayerAuthorized(p.Name) then
+                            tagText = "Moderador JV HUB ADM"
+                        end
+                        if tagText then CreatePlayerTag(p.Name, tagText) end
+                    end)
+                end
+            end
+        end
+    end))
+
+    -- ESTADO
+    local playerOriginalSpeed = {}
+    local CASTIGO_PLAYERS = {}
+    local INVISIBLE_JAILED_PLAYERS = {}
+    local LOOP_KILL_PLAYERS = {}
+    local LOOP_BRING_PLAYERS = {}
+    local LOOP_SIT_PLAYERS = {}
+    local LOOP_FIRE_PLAYERS = {}
+    local jaulas = {}
+
+    -- ANÚNCIO
+    local function CriarAnuncioBonito(remetente, texto)
+        local screenGui = Instance.new("ScreenGui")
+        screenGui.Name = "JVHubAnnouncement"
+        screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+        screenGui.DisplayOrder = 999; screenGui.IgnoreGuiInset = true
+        local blur = Instance.new("BlurEffect"); blur.Size = 0; blur.Parent = Lighting
+        local darkOverlay = Instance.new("Frame")
+        darkOverlay.Size = UDim2.fromScale(1,1); darkOverlay.BackgroundColor3 = Color3.fromRGB(0,0,0)
+        darkOverlay.BackgroundTransparency = 1; darkOverlay.BorderSizePixel = 0; darkOverlay.Parent = screenGui
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0,700,0,220); frame.Position = UDim2.new(0.5,0,-0.5,0)
+        frame.AnchorPoint = Vector2.new(0.5,0.5); frame.BackgroundColor3 = Color3.fromRGB(10,15,25)
+        frame.BackgroundTransparency = 0.05; frame.BorderSizePixel = 0; frame.Parent = screenGui
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(0,24)
+        local stroke = Instance.new("UIStroke", frame)
+        stroke.Color = Color3.fromRGB(0,150,255); stroke.Thickness = 4
+        local grad = Instance.new("UIGradient", frame)
+        grad.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0,40,90)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0,90,180)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(0,40,90))
+        }
+        grad.Rotation = 45
+        local iconContainer = Instance.new("Frame", frame)
+        iconContainer.Size = UDim2.new(0,100,0,100)
+        iconContainer.Position = UDim2.new(0,25,0.5,0)
+        iconContainer.AnchorPoint = Vector2.new(0,0.5)
+        iconContainer.BackgroundColor3 = Color3.fromRGB(0,90,180); iconContainer.BorderSizePixel = 0
+        Instance.new("UICorner", iconContainer).CornerRadius = UDim.new(1,0)
+        local icon = Instance.new("TextLabel", iconContainer)
+        icon.Size = UDim2.fromScale(1,1); icon.BackgroundTransparency = 1
+        icon.Text = "📢"; icon.Font = Enum.Font.GothamBold; icon.TextSize = 50
+        icon.TextColor3 = Color3.fromRGB(255,255,255)
+        local tc = Instance.new("Frame", frame)
+        tc.Size = UDim2.new(1,-155,1,-30); tc.Position = UDim2.new(0,135,0,15); tc.BackgroundTransparency = 1
+        local title = Instance.new("TextLabel", tc)
+        title.Size = UDim2.new(1,0,0,35); title.BackgroundTransparency = 1
+        title.Text = "⚡ AVISO DE " .. remetente:upper() .. " ⚡"
+        title.Font = Enum.Font.GothamBold; title.TextSize = 26
+        title.TextColor3 = Color3.fromRGB(255,255,255); title.TextXAlignment = Enum.TextXAlignment.Left
+        local content = Instance.new("TextLabel", tc)
+        content.Size = UDim2.new(1,0,1,-80); content.Position = UDim2.new(0,0,0,65)
+        content.BackgroundTransparency = 1; content.Text = texto
+        content.Font = Enum.Font.Gotham; content.TextSize = 20
+        content.TextColor3 = Color3.fromRGB(255,255,255)
+        content.TextXAlignment = Enum.TextXAlignment.Left
+        content.TextYAlignment = Enum.TextYAlignment.Top; content.TextWrapped = true
+        local pb = Instance.new("Frame", tc)
+        pb.Size = UDim2.new(0,0,0,4); pb.Position = UDim2.new(0,0,1,-10)
+        pb.BackgroundColor3 = Color3.fromRGB(0,150,255); pb.BorderSizePixel = 0
+        Instance.new("UICorner", pb).CornerRadius = UDim.new(1,0)
+        TweenService:Create(blur, TweenInfo.new(0.5), {Size=18}):Play()
+        TweenService:Create(darkOverlay, TweenInfo.new(0.5), {BackgroundTransparency=0.4}):Play()
+        TweenService:Create(frame, TweenInfo.new(0.9, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0.5,0,0.5,0)}):Play()
+        TweenService:Create(pb, TweenInfo.new(7, Enum.EasingStyle.Linear), {Size = UDim2.new(1,0,0,4)}):Play()
+        task.delay(7, function()
+            TweenService:Create(frame, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+                Position = UDim2.new(0.5,0,-0.5,0)}):Play()
+            TweenService:Create(blur, TweenInfo.new(0.7), {Size=0}):Play()
+            TweenService:Create(darkOverlay, TweenInfo.new(0.7), {BackgroundTransparency=1}):Play()
+            task.wait(0.8); screenGui:Destroy(); blur:Destroy()
+        end)
+    end
+
+    -- FUNÇÕES DE COMANDO
+    local function GetPlayerRootPart(player)
+        if player and player.Character then return player.Character:FindFirstChild("HumanoidRootPart") end
+    end
+
+    local function KillPlayer(t)
+        if not t or not t.Character then return false end
+        local h = t.Character:FindFirstChildOfClass("Humanoid")
+        if h then h.Health = 0; return true end
+    end
+
+    local function LoopKillPlayer(t)
+        if not t then return false end
+        LOOP_KILL_PLAYERS[t.Name] = true
+        task.spawn(function()
+            while LOOP_KILL_PLAYERS[t.Name] and t and t.Parent do
+                if t.Character then KillPlayer(t) end
+                task.wait(1)
+            end
+        end)
+    end
+
+    local function UnloopKillPlayer(t) if t then LOOP_KILL_PLAYERS[t.Name] = nil end end
+
+    local function InvisibleJailPlayer(t)
+        if not t or not t.Character then return false end
+        if INVISIBLE_JAILED_PLAYERS[t.Name] then
+            local d = INVISIBLE_JAILED_PLAYERS[t.Name]
+            if d.jailModel and d.jailModel.Parent then d.jailModel:Destroy() end
+            if d.loop then task.cancel(d.loop) end
+        end
+        local hrp = t.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return false end
+        local pos = hrp.Position
+        INVISIBLE_JAILED_PLAYERS[t.Name] = { originalPosition = pos }
+        local js = 8
+        local m = Instance.new("Model", Workspace); m.Name = "InvisibleJail_" .. t.Name
+        local parts = {}
+        for _, n in ipairs({"Base","Roof","Wall1","Wall2","Wall3","Wall4"}) do
+            parts[n] = Instance.new("Part", m)
+            parts[n].Anchored = true; parts[n].CanCollide = true
+            parts[n].Transparency = 1; parts[n].CastShadow = false
+        end
+        parts.Base.Size = Vector3.new(js,0.5,js); parts.Base.Position = pos - Vector3.new(0,3,0)
+        parts.Roof.Size = Vector3.new(js,0.5,js); parts.Roof.Position = parts.Base.Position + Vector3.new(0,js,0)
+        local wc = {
+            {n="Wall1",s=Vector3.new(0.5,js,js),p=parts.Base.Position+Vector3.new(js/2,js/2,0)},
+            {n="Wall2",s=Vector3.new(0.5,js,js),p=parts.Base.Position+Vector3.new(-js/2,js/2,0)},
+            {n="Wall3",s=Vector3.new(js,js,0.5),p=parts.Base.Position+Vector3.new(0,js/2,js/2)},
+            {n="Wall4",s=Vector3.new(js,js,0.5),p=parts.Base.Position+Vector3.new(0,js/2,-js/2)},
+        }
+        for _, c in ipairs(wc) do parts[c.n].Size = c.s; parts[c.n].Position = c.p end
+        local cp = parts.Base.Position + Vector3.new(0,js/2,0)
+        hrp.CFrame = CFrame.new(cp)
+        local loop = task.spawn(function()
+            local c = parts.Base.Position + Vector3.new(0,js/2,0)
+            while INVISIBLE_JAILED_PLAYERS[t.Name] and t.Parent and t.Character do
+                local ch = t.Character:FindFirstChild("HumanoidRootPart")
+                if ch and (ch.Position-c).Magnitude > (js/2)-1 then ch.CFrame = CFrame.new(c) end
+                task.wait(0.2)
+            end
+        end)
+        INVISIBLE_JAILED_PLAYERS[t.Name].jailModel = m
+        INVISIBLE_JAILED_PLAYERS[t.Name].loop = loop
+    end
+
+    local function InvisibleUnjailPlayer(t)
+        if not t or not INVISIBLE_JAILED_PLAYERS[t.Name] then return false end
+        local d = INVISIBLE_JAILED_PLAYERS[t.Name]
+        if d.jailModel and d.jailModel.Parent then d.jailModel:Destroy() end
+        if d.loop then task.cancel(d.loop) end
+        if t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+            t.Character.HumanoidRootPart.CFrame = CFrame.new(d.originalPosition)
+        end
+        INVISIBLE_JAILED_PLAYERS[t.Name] = nil
+    end
+
+    local function ExplodirPlayer(t)
+        if not t or not t.Character then return false end
+        local hrp = t.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return false end
+        local e = Instance.new("Explosion")
+        e.Position = hrp.Position; e.BlastPressure = 500000
+        e.BlastRadius = 10; e.DestroyJointRadiusPercent = 0; e.Parent = Workspace
+        local h = t.Character:FindFirstChildOfClass("Humanoid")
+        if h then h.Health = 0 end
+    end
+
+    local function LocalBring(authorName)
+        local a = Players:FindFirstChild(authorName)
+        if not a then return end
+        local ar, pr = GetPlayerRootPart(a), GetPlayerRootPart(LocalPlayer)
+        if ar and pr then pr.CFrame = ar.CFrame * CFrame.new(0,2,0) end
+    end
+
+    local function TPTrollPlayer(t)
+        if not t or not t.Character then return false end
+        local hrp = t.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return false end
+        local op = hrp.Position
+        hrp.CFrame = CFrame.new(Vector3.new(799,-9,482))
+        task.delay(3, function()
+            if t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+                t.Character.HumanoidRootPart.CFrame = CFrame.new(op)
+            end
+        end)
+    end
+
+    local function FloatPlayer(t)
+        if not t or not t.Character then return false end
+        local hrp = t.Character:FindFirstChild("HumanoidRootPart")
+        local h = t.Character:FindFirstChildOfClass("Humanoid")
+        if not hrp or not h then return false end
+        local pos = hrp.Position
+        h.WalkSpeed = 0; h.JumpHeight = 0
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.MaxForce = Vector3.new(0, math.huge, 0)
+        bv.Velocity = Vector3.new(0,10,0); bv.Name = "FloatVelocity"
+        local maxH = pos.Y + 50
+        task.spawn(function()
+            while t.Character and hrp.Parent and h.Parent do
+                if hrp.Position.Y >= maxH then
+                    if bv and bv.Parent then bv:Destroy() end
+                    h.Health = 0; break
+                end
+                task.wait(0.2)
+            end
+            if bv and bv.Parent then bv:Destroy() end
+        end)
+    end
+
+    local function LagPlayer(t)
+        if not t or not t.Character then return false end
+        for _ = 1, 50 do
+            task.spawn(function()
+                pcall(function()
+                    local hrp = t.Character:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        local e = Instance.new("Explosion")
+                        e.Position = hrp.Position + Vector3.new(math.random(-10,10), math.random(0,5), math.random(-10,10))
+                        e.BlastRadius = 20; e.BlastPressure = 1000000; e.Parent = Workspace
+                    end
+                end)
+            end)
+        end
+    end
+
+    local function CastigoPlayer(t)
+        if not t or not t.Character then return false end
+        if CASTIGO_PLAYERS[t.Name] then
+            local cd = CASTIGO_PLAYERS[t.Name]
+            if cd.jailModel and cd.jailModel.Parent then cd.jailModel:Destroy() end
+            if cd.loop then task.cancel(cd.loop) end
+        end
+        local hrp = t.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return false end
+        local op = hrp.Position
+        CASTIGO_PLAYERS[t.Name] = { originalPosition = op }
+        local cp = Vector3.new(1159,1727,421); local js = 12
+        local m = Instance.new("Model", Workspace); m.Name = "Castigo_" .. t.Name
+        local parts = {}
+        for _, n in ipairs({"Base","Roof","Wall1","Wall2","Wall3","Wall4"}) do
+            parts[n] = Instance.new("Part", m)
+            parts[n].Anchored = true; parts[n].CanCollide = true
+        end
+        parts.Base.Size = Vector3.new(js,0.5,js); parts.Base.Position = cp - Vector3.new(0,3,0)
+        parts.Roof.Size = Vector3.new(js,0.5,js); parts.Roof.Position = parts.Base.Position + Vector3.new(0,js,0)
+        local wc = {
+            {n="Wall1",s=Vector3.new(0.5,js,js),p=parts.Base.Position+Vector3.new(js/2,js/2,0)},
+            {n="Wall2",s=Vector3.new(0.5,js,js),p=parts.Base.Position+Vector3.new(-js/2,js/2,0)},
+            {n="Wall3",s=Vector3.new(js,js,0.5),p=parts.Base.Position+Vector3.new(0,js/2,js/2)},
+            {n="Wall4",s=Vector3.new(js,js,0.5),p=parts.Base.Position+Vector3.new(0,js/2,-js/2)},
+        }
+        for _, c in ipairs(wc) do parts[c.n].Size = c.s; parts[c.n].Position = c.p end
+        hrp.CFrame = CFrame.new(parts.Base.Position + Vector3.new(0,js/2,0))
+        local loop = task.spawn(function()
+            local c = parts.Base.Position + Vector3.new(0,js/2,0)
+            while CASTIGO_PLAYERS[t.Name] and t.Parent and t.Character do
+                local ch = t.Character:FindFirstChild("HumanoidRootPart")
+                if ch and (ch.Position-c).Magnitude > (js/2)-1 then ch.CFrame = CFrame.new(c) end
+                task.wait(0.2)
+            end
+        end)
+        CASTIGO_PLAYERS[t.Name].jailModel = m
+        CASTIGO_PLAYERS[t.Name].loop = loop
+    end
+
+    local function DescastigoPlayer(t)
+        if not t or not CASTIGO_PLAYERS[t.Name] then return false end
+        local cd = CASTIGO_PLAYERS[t.Name]
+        if cd.jailModel and cd.jailModel.Parent then cd.jailModel:Destroy() end
+        if cd.loop then task.cancel(cd.loop) end
+        if t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+            t.Character.HumanoidRootPart.CFrame = CFrame.new(cd.originalPosition)
+        end
+        CASTIGO_PLAYERS[t.Name] = nil
+    end
+
+    local function CriarJumpscareLocal(imageId, audioId)
+        local sg = Instance.new("ScreenGui")
+        sg.Name = "JVJumpscare"; sg.ZIndexBehavior = Enum.ZIndexBehavior.Global
+        sg.DisplayOrder = 2147483647; sg.ResetOnSpawn = false
+        sg.IgnoreGuiInset = true; sg.Parent = CoreGui
+        local frame = Instance.new("Frame", sg)
+        frame.Size = UDim2.new(1,0,1,0); frame.BackgroundColor3 = Color3.new(0,0,0)
+        frame.BorderSizePixel = 0; frame.ZIndex = 2147483647
+        local img = Instance.new("ImageLabel", frame)
+        img.Size = UDim2.new(1,0,1,0); img.BackgroundTransparency = 1
+        img.Image = imageId; img.ScaleType = Enum.ScaleType.Fit; img.ZIndex = 2147483647
+        local s = Instance.new("Sound", frame)
+        s.SoundId = audioId; s.Volume = 2; s:Play()
+        task.spawn(function()
+            for i = 1, 12 do
+                if not sg.Parent then break end
+                img.ImageTransparency = (i % 2 == 0) and 0.1 or 0
+                task.wait(0.2)
+            end
+            img.ImageTransparency = 0; task.wait(0.8)
+            TweenService:Create(img, TweenInfo.new(1.5), {ImageTransparency = 1}):Play()
+            TweenService:Create(frame, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+            task.wait(2); sg:Destroy()
+        end)
+    end
+
+    local function TheRakeJumpscare()
+        local SS = game:GetService("SoundService")
+        local sg = Instance.new("ScreenGui")
+        sg.Name = "JVFullJumpscare"; sg.IgnoreGuiInset = true
+        sg.ResetOnSpawn = false; sg.DisplayOrder = 999999; sg.Parent = CoreGui
+        local img = Instance.new("ImageLabel", sg)
+        img.Size = UDim2.new(1.2,0,1.2,0); img.Position = UDim2.new(-0.1,0,-0.1,0)
+        img.BackgroundTransparency = 1; img.Image = "rbxassetid://108753859505348"
+        img.ZIndex = 999999
+        local s1 = Instance.new("Sound", SS); s1.SoundId = "rbxassetid://18967004856"; s1.Volume = 10
+        local s2 = Instance.new("Sound", SS); s2.SoundId = "rbxassetid://103396125105301"; s2.Volume = 10
+        local shake = true
+        task.spawn(function()
+            while shake do
+                img.Position = UDim2.new(-0.1, math.random(-10,10), -0.1, math.random(-10,10))
+                task.wait(0.05)
+            end
+        end)
+        s1:Play()
+        task.delay(2, function()
+            s2:Play()
+            s2.Ended:Connect(function() shake = false; sg:Destroy() end)
+        end)
+    end
+
+    -- ===========================================================
+    -- FUNÇÃO BACKROOMS (DO DRIP CLIENT)
+    -- ===========================================================
+    local function Backrooms(targetPlayer)
+        local Players = game:GetService("Players")
+        local TweenService = game:GetService("TweenService")
+
+        local player = targetPlayer or Players.LocalPlayer
+
+        local LocalPlayer = Players.LocalPlayer
+        local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+        screenGui.IgnoreGuiInset = true
+        screenGui.ResetOnSpawn = false
+
+        local blackFrame = Instance.new("Frame", screenGui)
+        blackFrame.Size = UDim2.new(1, 0, 1, 0)
+        blackFrame.Position = UDim2.new(0, 0, 0, 0)
+        blackFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+        blackFrame.BackgroundTransparency = 1
+
+        TweenService:Create(blackFrame, TweenInfo.new(1), {BackgroundTransparency = 0}):Play()
+        task.wait(1.2)
+
+        local success, ModelObject = pcall(function()
+            return game:GetObjects("rbxassetid://10581711055")[1]
+        end)
+
+        if not success then
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Error",
+                Text = "Failed to load Backrooms model",
+                Duration = 3
+            })
+            screenGui:Destroy()
+            return
+        end
+
+        ModelObject.Parent = workspace
+
+        for _, part in pairs(ModelObject:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Position = part.Position + Vector3.new(99999, 99999, 99999)
+            end
+        end
+
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(100127, 100003, 100192)
+        end
+
+        task.wait(0.5)
+
+        TweenService:Create(blackFrame, TweenInfo.new(1), {BackgroundTransparency = 1}):Play()
+        task.wait(1.2)
+
+        screenGui:Destroy()
+
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Backrooms",
+            Text = player.Name .. " has been sent to the Backrooms!",
+            Duration = 4
+        })
+    end
+
+    local function SitPlayer(t)
+        if not t or not t.Character then return false end
+        local h = t.Character:FindFirstChildOfClass("Humanoid")
+        if h then h.Sit = true end
+    end
+
+    local function LoopSitPlayer(t)
+        if not t then return false end
+        LOOP_SIT_PLAYERS[t.Name] = true
+        task.spawn(function()
+            while LOOP_SIT_PLAYERS[t.Name] and t and t.Parent do
+                if t.Character then
+                    local h = t.Character:FindFirstChildOfClass("Humanoid")
+                    if h then h.Sit = true end
+                end
+                task.wait(0.5)
+            end
+        end)
+    end
+
+    local function UnloopSitPlayer(t) if t then LOOP_SIT_PLAYERS[t.Name] = nil end end
+
+    local function FirePlayer(t)
+        if not t or not t.Character then return false end
+        local h = t.Character:FindFirstChildOfClass("Humanoid")
+        if h then
+            local f = Instance.new("Fire")
+            f.Parent = t.Character:FindFirstChild("HumanoidRootPart")
+                or t.Character:FindFirstChild("Torso")
+                or t.Character:FindFirstChildWhichIsA("BasePart")
+            h:TakeDamage(100)
+        end
+    end
+
+    local function LoopFirePlayer(t)
+        if not t then return false end
+        LOOP_FIRE_PLAYERS[t.Name] = true
+        task.spawn(function()
+            while LOOP_FIRE_PLAYERS[t.Name] and t and t.Parent do
+                if t.Character then FirePlayer(t) end
+                task.wait(1)
+            end
+        end)
+    end
+
+    local function UnloopFirePlayer(t) if t then LOOP_FIRE_PLAYERS[t.Name] = nil end end
+
+    local function TransformIntoGoner()
+        local RS = ReplicatedStorage
+        pcall(function()
+            RS:WaitForChild("Remotes"):WaitForChild("ChangeCharacterBody"):InvokeServer(unpack({{
+                116253341067642,110703630520331,119263803737569,
+                99234191703566,99948897896884,0
+            }}))
+        end)
+        task.wait(3)
+        local hum = (LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()):WaitForChild("Humanoid")
+        local anim = Instance.new("Animation")
+        anim.AnimationId = "rbxassetid://4686925579"
+        hum:LoadAnimation(anim):Play()
+        hum.WalkSpeed = 0
+        task.wait(2)
+        pcall(function()
+            for _, a in ipairs(hum:GetAppliedDescription():GetAccessories(true)) do
+                if a.AssetId then RS.Remotes.Wear:InvokeServer(unpack({tonumber(a.AssetId)})) end
+            end
+            task.wait()
+            for _, id in ipairs({17771175724,17822722698,17822749561,17772174303,17770317484,4586060885,6913613757}) do
+                RS.Remotes.Wear:InvokeServer(unpack({id}))
+            end
+            RS.Remotes.ChangeBodyColor:FireServer(unpack({"Really black"}))
+            task.wait(0.2)
+            RS.Remotes.ApplyEmmiter:InvokeServer(18635845425, "087SmokeBlack")
+        end)
+        task.wait(1)
+        for _, t in pairs(hum:GetPlayingAnimationTracks()) do t:Stop() end
+        hum.WalkSpeed = 16
+    end
+
+    local FloppaRunning = false
+    local function FloppaRain()
+        FloppaRunning = true
+        local sky = Instance.new("Sky")
+        for _, f in ipairs({"Bk","Dn","Ft","Lf","Rt","Up"}) do
+            sky["Skybox"..f] = "rbxassetid://123446364161879"
+        end
+        sky.Parent = Lighting
+        task.spawn(function()
+            while FloppaRunning do
+                local s = Instance.new("Sound", Workspace)
+                s.SoundId = "rbxassetid://8772968188"; s.Volume = 1; s:Play()
+                task.wait(5)
+            end
+        end)
+        task.wait(1)
+        local tid = "rbxassetid://123446364161879"
+        local function ApplyTex(p)
+            for _, f in pairs({"Front","Back","Left","Right","Top","Bottom"}) do
+                local d = Instance.new("Decal", p); d.Texture = tid; d.Face = Enum.NormalId[f]
+            end
+        end
+        local count = 0
+        while FloppaRunning do
+            if count < 80 then
+                for _ = 1, 5 do
+                    local p = Instance.new("Part")
+                    p.Size = Vector3.new(2,2,2)
+                    p.Position = Vector3.new(math.random(-250,250),100,math.random(-250,250))
+                    p.Anchored = false; p.CanCollide = true
+                    ApplyTex(p)
+                    p.Touched:Connect(function(hit)
+                        local h = hit.Parent:FindFirstChildOfClass("Humanoid")
+                        if h then h:TakeDamage(10) end
+                    end)
+                    p.Parent = Workspace; Debris:AddItem(p,8); count = count + 1
+                end
+            end
+            task.wait(0.5)
+        end
+    end
+
+    local function StopFloppa()
+        FloppaRunning = false
+        for _, obj in ipairs(Workspace:GetChildren()) do
+            if obj:IsA("Part") and obj.Size == Vector3.new(2,2,2) then
+                local has = false
+                for _, c in ipairs(obj:GetChildren()) do
+                    if c:IsA("Decal") then has = true; break end
+                end
+                if has then pcall(function() obj:Destroy() end) end
+            end
+        end
+        local s = Lighting:FindFirstChildOfClass("Sky")
+        if s then s:Destroy() end
+    end
+
+    local function DomainExpansion(t)
+        if not t or not t.Character then return false end
+        local hrp = t.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return false end
+        local op = hrp.CFrame
+        local dc = Vector3.new(5000,100,5000)
+        local sl = {
+            Brightness=Lighting.Brightness, Ambient=Lighting.Ambient,
+            OutdoorAmbient=Lighting.OutdoorAmbient, FogEnd=Lighting.FogEnd,
+            FogStart=Lighting.FogStart, FogColor=Lighting.FogColor,
+            ClockTime=Lighting.ClockTime, ShadowSoftness=Lighting.ShadowSoftness
+        }
+        local se = {}
+        for _, e in ipairs(Lighting:GetChildren()) do
+            if e:IsA("PostEffect") or e:IsA("Sky") or e:IsA("Atmosphere") then
+                se[#se+1] = e:Clone(); e:Destroy()
+            end
+        end
+        local sg = Instance.new("ScreenGui", CoreGui)
+        sg.ResetOnSpawn = false; sg.DisplayOrder = 999999; sg.IgnoreGuiInset = true
+        local bg = Instance.new("Frame", sg)
+        bg.Size = UDim2.new(2,0,2,0); bg.Position = UDim2.new(-0.5,0,-0.5,0)
+        bg.BackgroundColor3 = Color3.fromRGB(0,0,0); bg.BorderSizePixel = 0
+        local tl = Instance.new("TextLabel", sg)
+        tl.Size = UDim2.new(1,0,0.2,0); tl.Position = UDim2.new(0,0,0.4,0)
+        tl.BackgroundTransparency = 1; tl.TextColor3 = Color3.fromRGB(0,150,255)
+        tl.TextTransparency = 1; tl.Font = Enum.Font.Antique
+        tl.TextScaled = true; tl.Text = "Malevolent Shrine"
+        task.wait(0.8)
+        hrp.CFrame = CFrame.new(dc)
+        Lighting.Brightness = 0.3; Lighting.ClockTime = 0
+        Lighting.Ambient = Color3.fromRGB(0,30,80); Lighting.OutdoorAmbient = Color3.fromRGB(0,20,60)
+        Lighting.FogStart = 5; Lighting.FogEnd = 60; Lighting.FogColor = Color3.fromRGB(0,5,15)
+        TweenService:Create(bg, TweenInfo.new(1.5), {BackgroundTransparency=1}):Play()
+        task.delay(0.5, function()
+            TweenService:Create(tl, TweenInfo.new(1), {TextTransparency=0}):Play()
+            task.delay(2.5, function()
+                TweenService:Create(tl, TweenInfo.new(1.2), {TextTransparency=1}):Play()
+            end)
+        end)
+        local fl = Instance.new("Part")
+        fl.Size = Vector3.new(300,1,300); fl.Anchored = true; fl.CanCollide = true
+        fl.CFrame = CFrame.new(dc - Vector3.new(0,3,0)); fl.Parent = Workspace
+        task.delay(8, function()
+            if t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+                t.Character.HumanoidRootPart.CFrame = op
+            end
+            Lighting.Brightness = sl.Brightness
+            Lighting.Ambient = sl.Ambient
+            Lighting.OutdoorAmbient = sl.OutdoorAmbient
+            Lighting.FogEnd = sl.FogEnd; Lighting.FogStart = sl.FogStart
+            Lighting.FogColor = sl.FogColor; Lighting.ClockTime = sl.ClockTime
+            Lighting.ShadowSoftness = sl.ShadowSoftness
+            for _, e in ipairs(se) do e.Parent = Lighting end
+            fl:Destroy(); task.wait(1.5); sg:Destroy()
+        end)
+    end
+
+    -- DEVE AFETAR
+    local function DeveAfetar(alvoStr)
+        local t = string.lower(alvoStr or "todos")
+        local my = string.lower(LocalPlayer.Name)
+        return (t == "todos" or t == my or t == "outros")
+    end
+
+    -- DISPATCHER DOS 100 COMANDOS NUMERADOS
+    local function ExecutarComandoComFuncaoReal(id, alvo)
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local root = char and char:FindFirstChild("HumanoidRootPart")
+        if not DeveAfetar(alvo) and id > 2 then return end
+
+        if id == 1 then
+            Lighting.Ambient = Color3.fromRGB(0,50,150)
+            Lighting.OutdoorAmbient = Color3.fromRGB(0,30,90)
+            Lighting.Brightness = 0.4
+            local s = Lighting:FindFirstChildOfClass("Sky") or Instance.new("Sky", Lighting)
+            s.Name = "JVDomainSky"
+        elseif id == 2 then
+            Lighting.Brightness = 1
+            if Lighting:FindFirstChild("JVDomainSky") then Lighting.JVDomainSky:Destroy() end
+        elseif id == 3 then
+            task.spawn(function() Backrooms(LocalPlayer) end)
+        elseif id == 4 then if hum then hum.Health = 0 end
+        elseif id == 5 then if hum then hum.MaxHealth = 0; hum.Health = -999999 end
+        elseif id == 6 then if DeveAfetar(alvo) then LocalPlayer:Kick("Expulso pelo JV HUB ADM.") end
+        elseif id == 7 then if root then root.Anchored = true end
+        elseif id == 8 then if root then root.Anchored = false end
+        elseif id == 9 then if root then local p = Instance.new("Part",Workspace); p.Name="JVJail"; p.Size=Vector3.new(6,1,6); p.Position=root.Position+Vector3.new(0,5,0); p.Anchored=true; p.Transparency=0.5; p.Color=Color3.fromRGB(0,100,200) end
+        elseif id == 10 then if root then local p = Instance.new("Part",Workspace); p.Name="JVJail"; p.Size=Vector3.new(6,1,6); p.Position=root.Position-Vector3.new(0,3,0); p.Anchored=true; p.Transparency=0.5; p.Color=Color3.fromRGB(0,100,200) end
+        elseif id == 11 then if root then local p = Instance.new("Part",Workspace); p.Name="JVJail"; p.Size=Vector3.new(6,6,1); p.Position=root.Position+root.CFrame.LookVector*3; p.Anchored=true; p.Transparency=0.5; p.Color=Color3.fromRGB(0,100,200) end
+        elseif id == 12 then if root then local p = Instance.new("Part",Workspace); p.Name="JVJail"; p.Size=Vector3.new(6,6,1); p.Position=root.Position-root.CFrame.LookVector*3; p.Anchored=true; p.Transparency=0.5; p.Color=Color3.fromRGB(0,100,200) end
+        elseif id == 13 then if root then local p = Instance.new("Part",Workspace); p.Name="JVJail"; p.Size=Vector3.new(1,6,6); p.Position=root.Position+root.CFrame.RightVector*3; p.Anchored=true; p.Transparency=0.5; p.Color=Color3.fromRGB(0,100,200) end
+        elseif id == 14 then if root then local p = Instance.new("Part",Workspace); p.Name="JVJail"; p.Size=Vector3.new(1,6,6); p.Position=root.Position-root.CFrame.RightVector*3; p.Anchored=true; p.Transparency=0.5; p.Color=Color3.fromRGB(0,100,200) end
+        elseif id == 15 then for _, v in pairs(Workspace:GetChildren()) do if v.Name == "JVJail" then v:Destroy() end end
+        elseif id == 16 then if hum then hum.MaxHealth = math.huge; hum.Health = math.huge end
+        elseif id == 17 then if hum then hum.MaxHealth = 100; hum.Health = 100 end
+        elseif id == 18 then if not InfJumpConnection then InfJumpConnection = UserInputService.JumpRequest:Connect(function() if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end end) end
+        elseif id == 19 then if InfJumpConnection then InfJumpConnection:Disconnect(); InfJumpConnection = nil end
+        elseif id == 20 then if hum then hum.WalkSpeed = 50 end
+        elseif id == 21 then if hum then hum.WalkSpeed = 100 end
+        elseif id == 22 then if hum then hum.WalkSpeed = 200 end
+        elseif id == 23 then if hum then hum.WalkSpeed = 16 end
+        elseif id == 24 then if hum then hum.JumpPower = 100 end
+        elseif id == 25 then if hum then hum.JumpPower = 300 end
+        elseif id == 26 then if hum then hum.JumpPower = 50 end
+        elseif id == 27 then if not NoclipConnection then NoclipConnection = RunService.Stepped:Connect(function() if LocalPlayer.Character then for _, v in pairs(LocalPlayer.Character:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end end end) end
+        elseif id == 28 then if NoclipConnection then NoclipConnection:Disconnect(); NoclipConnection = nil end
+        elseif id == 29 then if char then for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then v.Transparency = 1 elseif v:IsA("Decal") then v.Transparency = 1 end end end
+        elseif id == 30 then if char then for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then v.Transparency = 0 elseif v:IsA("Decal") then v.Transparency = 0 end end end
+        elseif id == 31 then
+            Flying = true
+            if root and not FlyConnection then
+                local bv = Instance.new("BodyVelocity", root); bv.Name = "JVFly"
+                bv.MaxForce = Vector3.new(9e9,9e9,9e9)
+                FlyConnection = RunService.RenderStepped:Connect(function()
+                    if Flying and root and hum then
+                        bv.Velocity = Workspace.CurrentCamera.CFrame.LookVector * (hum.MoveDirection.Magnitude > 0 and 60 or 0)
+                    else
+                        bv:Destroy()
+                        if FlyConnection then FlyConnection:Disconnect(); FlyConnection = nil end
+                    end
+                end)
+            end
+        elseif id == 32 then Flying = false; if root and root:FindFirstChild("JVFly") then root.JVFly:Destroy() end
+        elseif id == 33 then if hum then hum.Sit = true end
+        elseif id == 34 then if hum then hum.Health = hum.MaxHealth end
+        elseif id == 35 then if root and not root:FindFirstChild("JVFire") then Instance.new("Fire", root).Name = "JVFire" end
+        elseif id == 36 then if root and root:FindFirstChild("JVFire") then root.JVFire:Destroy() end
+        elseif id == 37 then if root and not root:FindFirstChild("JVSparkle") then Instance.new("Sparkles", root).Name = "JVSparkle" end
+        elseif id == 38 then if root and root:FindFirstChild("JVSparkle") then root.JVSparkle:Destroy() end
+        elseif id == 39 then if root and not root:FindFirstChild("JVSmoke") then Instance.new("Smoke", root).Name = "JVSmoke" end
+        elseif id == 40 then if root and root:FindFirstChild("JVSmoke") then root.JVSmoke:Destroy() end
+        elseif id == 41 then Workspace.Gravity = 0
+        elseif id == 42 then Workspace.Gravity = 50
+        elseif id == 43 then Workspace.Gravity = 196.2
+        elseif id == 44 then Lighting.Brightness = 2; Lighting.ClockTime = 14; Lighting.FogEnd = 999999
+        elseif id == 45 then Lighting.FogEnd = 999999
+        elseif id == 46 then Lighting.ClockTime = 0
+        elseif id == 47 then Lighting.ClockTime = 12
+        elseif id == 48 then Lighting.ClockTime = 18
+        elseif id == 49 then
+            ESPAtivo = true
+            for _, p in ipairs(Players:GetPlayers()) do
+                if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("Head") then
+                    local bb = Instance.new("BillboardGui", p.Character.Head)
+                    bb.Name = "JVESP"; bb.Size = UDim2.new(0,50,0,50); bb.AlwaysOnTop = true
+                    local tl = Instance.new("TextLabel", bb)
+                    tl.Size = UDim2.new(1,0,1,0); tl.Text = p.Name
+                    tl.TextColor3 = Color3.fromRGB(0,150,255); tl.BackgroundTransparency = 1
+                end
+            end
+        elseif id == 50 then
+            for _, p in ipairs(Players:GetPlayers()) do
+                if p.Character and p.Character:FindFirstChild("Head") and p.Character.Head:FindFirstChild("JVESP") then
+                    p.Character.Head.JVESP:Destroy()
+                end
+            end
+        elseif id == 51 then
+            RainbowCorpse = true
+            task.spawn(function()
+                while RainbowCorpse and char do
+                    for _, v in pairs(char:GetDescendants()) do
+                        if v:IsA("BasePart") then v.Color = Color3.fromHSV(tick() % 5 / 5, 1, 1) end
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        elseif id == 52 then RainbowCorpse = false
+        elseif id == 53 then LocalPlayer.CameraMaxZoomDistance = 50
+        elseif id == 54 then LocalPlayer.CameraMaxZoomDistance = 400
+        elseif id == 55 then LocalPlayer.CameraMaxZoomDistance = 1000
+        elseif id == 56 then Workspace.CurrentCamera.FieldOfView = 70
+        elseif id == 57 then Workspace.CurrentCamera.FieldOfView = 120
+        elseif id == 58 then Workspace.CurrentCamera.FieldOfView = 90
+        elseif id == 59 then
+            for _, v in pairs(Workspace:GetDescendants()) do
+                if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic; v.Reflectance = 0
+                elseif v:IsA("Decal") or v:IsA("Texture") then v:Destroy() end
+            end
+        elseif id == 60 then
+            local t = Instance.new("Tool", LocalPlayer.Backpack)
+            t.Name = "JV Tool"; Instance.new("Part", t).Name = "Handle"
+        elseif id == 61 then LocalPlayer.Backpack:ClearAllChildren()
+        elseif id == 62 then if hum then hum.PlatformStand = true end
+        elseif id == 63 then if hum then hum.PlatformStand = false end
+        elseif id == 64 then if hum then hum.HipHeight = 5 end
+        elseif id == 65 then if hum then hum.HipHeight = 0 end
+        elseif id == 66 then if root then local e = Instance.new("Explosion", Workspace); e.Position = root.Position end
+        elseif id == 67 then if root then Instance.new("Sparkles", root) end
+        elseif id == 68 then for _, v in pairs(char:GetChildren()) do if v:IsA("Clothing") then v:Destroy() end end
+        elseif id == 69 then for _, v in pairs(char:GetChildren()) do if v:IsA("Accessory") then v:Destroy() end end
+        elseif id == 70 then if hum then hum.MaxHealth = 99999; hum.Health = 99999 end
+        elseif id == 71 then Workspace.CurrentCamera.CameraSubject = hum
+        elseif id == 72 then if root then root.CFrame = root.CFrame + Vector3.new(0,20,0) end
+        elseif id == 73 then if root then root.CFrame = root.CFrame + Vector3.new(0,-20,0) end
+        elseif id == 74 then if root then root.CFrame = root.CFrame + root.CFrame.LookVector * 15 end
+        elseif id == 75 then if root then root.CFrame = root.CFrame - root.CFrame.LookVector * 15 end
+        elseif id == 76 then if hum then hum.AutoRotate = false end
+        elseif id == 77 then if hum then hum.AutoRotate = true end
+        elseif id == 78 then Lighting.TimeOfDay = "06:00:00"
+        elseif id == 79 then Lighting.TimeOfDay = "12:00:00"
+        elseif id == 80 then Lighting.TimeOfDay = "18:00:00"
+        elseif id == 81 then Lighting.TimeOfDay = "00:00:00"
+        elseif id == 82 then
+            for _, p in ipairs(Players:GetPlayers()) do
+                if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                    p.Character.HumanoidRootPart.CFrame = root.CFrame
+                end
+            end
+        elseif id == 83 then if char then for _, v in ipairs(char:GetChildren()) do if v:IsA("BasePart") then v.Transparency = 0.5 end end end
+        elseif id == 84 then if char then for _, v in ipairs(char:GetChildren()) do if v:IsA("BasePart") then v.Transparency = 0 end end end
+        elseif id == 85 then LocalPlayer.DevComputerCameraMode = Enum.DevComputerCameraMode.Classic
+        elseif id == 86 then LocalPlayer.DevComputerCameraMode = Enum.DevComputerCameraMode.LockFirstPerson
+        elseif id == 87 then Workspace.CurrentCamera.FieldOfView = 50
+        elseif id == 88 then Workspace.CurrentCamera.FieldOfView = 100
+        elseif id == 89 then Workspace.CurrentCamera.FieldOfView = 30
+        elseif id == 90 then if hum then hum.CameraOffset = Vector3.new(0,3,0) end
+        elseif id == 91 then if hum then hum.CameraOffset = Vector3.new(0,0,0) end
+        elseif id == 92 then if hum then hum.CameraOffset = Vector3.new(3,0,0) end
+        elseif id == 93 then if root then root.AssemblyLinearVelocity = Vector3.new(0,100,0) end
+        elseif id == 94 then if root then root.AssemblyLinearVelocity = Vector3.new(100,0,0) end
+        elseif id == 95 then if root then root.AssemblyAngularVelocity = Vector3.new(0,50,0) end
+        elseif id == 96 then if root then root.AssemblyAngularVelocity = Vector3.new(0,0,0) end
+        elseif id == 97 then if root and not root:FindFirstChild("JVPointLight") then local l = Instance.new("PointLight", root); l.Name = "JVPointLight"; l.Range = 25; l.Brightness = 5; l.Color = Color3.fromRGB(0,150,255) end
+        elseif id == 98 then if root and root:FindFirstChild("JVPointLight") then root.JVPointLight:Destroy() end
+        elseif id == 99 then if root and not root:FindFirstChild("JVBodyHole") then local p = Instance.new("Part", root); p.Name = "JVBodyHole"; p.Size = Vector3.new(2,2,2); p.Transparency = 1 end
+        elseif id == 100 then if root and root:FindFirstChild("JVBodyHole") then root.JVBodyHole:Destroy() end
+        end
+    end
+
+    -- DISPATCHER DOS COMANDOS ADM (via chat)
+    local FuncoesADMChat = {}
+
+    FuncoesADMChat.verifique = function()
+        pcall(function()
+            if ReplicatedStorage:FindFirstChild("RE") and ReplicatedStorage.RE:FindFirstChild("1Too1l") then
+                ReplicatedStorage.RE["1Too1l"]:InvokeServer("PickingTools", "LaundryBasket")
+            end
+        end)
+        task.delay(0.5, function()
+            for _, p in ipairs(Players:GetPlayers()) do
+                local has = (p.Backpack and p.Backpack:FindFirstChild("LaundryBasket"))
+                    or (p.Character and p.Character:FindFirstChild("LaundryBasket"))
+                if has and p.Character then
+                    local head = p.Character:FindFirstChild("Head")
+                    if head then
+                        local old = head:FindFirstChild("JVHubLaundry")
+                        if old then old:Destroy() end
+                        local gui = Instance.new("BillboardGui", head)
+                        gui.Name = "JVHubLaundry"
+                        gui.Size = UDim2.new(0,240,0,50)
+                        gui.StudsOffset = Vector3.new(0,3.5,0)
+                        gui.AlwaysOnTop = true; gui.Adornee = head
+                        local txt = Instance.new("TextLabel", gui)
+                        txt.Size = UDim2.new(1,0,1,0); txt.BackgroundTransparency = 1
+                        txt.Font = Enum.Font.GothamBold; txt.TextScaled = true
+                        txt.TextStrokeTransparency = 0.2; txt.TextStrokeColor3 = Color3.new(0,0,0)
+                        txt.TextColor3 = Color3.fromRGB(0,180,255)
+                        txt.Text = "Usuário JV HUB ADM"
+                    end
+                end
+            end
+        end)
+    end
+
+    FuncoesADMChat.fling = function(a)
+        if DeveAfetar(a) then
+            local c = LocalPlayer.Character
+            if c then
+                local r = c:FindFirstChild("HumanoidRootPart")
+                if r then TweenService:Create(r, TweenInfo.new(1), {CFrame = CFrame.new(0,100000,0)}):Play() end
+            end
+        end
+    end
+    FuncoesADMChat.unfreeze = function(a)
+        if DeveAfetar(a) then
+            local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if h then h.WalkSpeed = playerOriginalSpeed[LocalPlayer.Name] or 16 end
+        end
+    end
+    FuncoesADMChat.jail = function(a)
+        if not DeveAfetar(a) then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        local pos = root.Position
+        local key = LocalPlayer.Name
+        if jaulas[key] then for _, p in ipairs(jaulas[key]) do if p then p:Destroy() end end end
+        jaulas[key] = {}
+        local function criar(cf, s)
+            local p = Instance.new("Part")
+            p.Anchored = true; p.CanCollide = true
+            p.Material = Enum.Material.ForceField; p.Transparency = 0.3
+            p.Color = Color3.fromRGB(0,100,200); p.Size = s; p.CFrame = cf; p.Parent = Workspace
+            table.insert(jaulas[key], p)
+        end
+        criar(CFrame.new(pos + Vector3.new(5,0,0)), Vector3.new(1,10,10))
+        criar(CFrame.new(pos + Vector3.new(-5,0,0)), Vector3.new(1,10,10))
+        criar(CFrame.new(pos + Vector3.new(0,0,5)), Vector3.new(10,10,1))
+        criar(CFrame.new(pos + Vector3.new(0,0,-5)), Vector3.new(10,10,1))
+        criar(CFrame.new(pos + Vector3.new(0,5,0)), Vector3.new(10,1,10))
+        criar(CFrame.new(pos + Vector3.new(0,-5,0)), Vector3.new(10,1,10))
+    end
+    FuncoesADMChat.unjail = function(a)
+        if not DeveAfetar(a) then return end
+        local key = LocalPlayer.Name
+        if jaulas[key] then
+            for _, p in ipairs(jaulas[key]) do pcall(function() p:Destroy() end) end
+            jaulas[key] = nil
+        end
+    end
+    FuncoesADMChat.jailinvisible = function(a) if DeveAfetar(a) then InvisibleJailPlayer(LocalPlayer) end end
+    FuncoesADMChat.unjailinvisible = function(a) if DeveAfetar(a) then InvisibleUnjailPlayer(LocalPlayer) end end
+    FuncoesADMChat.explode = function(a) if DeveAfetar(a) then ExplodirPlayer(LocalPlayer) end end
+    FuncoesADMChat.bring = function(a)
+        if not DeveAfetar(a) then return end
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p.Name:lower() ~= LocalPlayer.Name:lower() and IsPlayerAuthorized(p.Name) then
+                LocalBring(p.Name); break
+            end
+        end
+    end
+    FuncoesADMChat.tptroll = function(a) if DeveAfetar(a) then TPTrollPlayer(LocalPlayer) end end
+    FuncoesADMChat.float = function(a) if DeveAfetar(a) then FloatPlayer(LocalPlayer) end end
+    FuncoesADMChat.lag = function(a) if DeveAfetar(a) then LagPlayer(LocalPlayer) end end
+    FuncoesADMChat.castigo = function(a) if DeveAfetar(a) then CastigoPlayer(LocalPlayer) end end
+    FuncoesADMChat.descastigo = function(a) if DeveAfetar(a) then DescastigoPlayer(LocalPlayer) end end
+    FuncoesADMChat.loopkill = function(a) if DeveAfetar(a) then LoopKillPlayer(LocalPlayer) end end
+    FuncoesADMChat.unloopkill = function(a) if DeveAfetar(a) then UnloopKillPlayer(LocalPlayer) end end
+    FuncoesADMChat.loopbring = function(a)
+        if not DeveAfetar(a) then return end
+        LOOP_BRING_PLAYERS[LocalPlayer.Name] = true
+        task.spawn(function()
+            while LOOP_BRING_PLAYERS[LocalPlayer.Name] do
+                for _, p in ipairs(Players:GetPlayers()) do
+                    if p.Name:lower() ~= LocalPlayer.Name:lower() and IsPlayerAuthorized(p.Name) then
+                        LocalBring(p.Name); break
+                    end
+                end
+                task.wait(0.5)
+            end
+        end)
+    end
+    FuncoesADMChat.unloopbring = function(a) if DeveAfetar(a) then LOOP_BRING_PLAYERS[LocalPlayer.Name] = nil end end
+    FuncoesADMChat.loopsit = function(a) if DeveAfetar(a) then LoopSitPlayer(LocalPlayer) end end
+    FuncoesADMChat.unloopsit = function(a) if DeveAfetar(a) then UnloopSitPlayer(LocalPlayer) end end
+    FuncoesADMChat.loopfire = function(a) if DeveAfetar(a) then LoopFirePlayer(LocalPlayer) end end
+    FuncoesADMChat.unloopfire = function(a) if DeveAfetar(a) then UnloopFirePlayer(LocalPlayer) end end
+    FuncoesADMChat.flopparain = function(a) if DeveAfetar(a) then task.spawn(FloppaRain) end end
+    FuncoesADMChat.unfloppa = function(a) if DeveAfetar(a) then StopFloppa() end end
+    FuncoesADMChat.domainexpansion = function(a) if DeveAfetar(a) then task.spawn(function() DomainExpansion(LocalPlayer) end) end end
+    FuncoesADMChat.jumps1 = function(a) if DeveAfetar(a) then CriarJumpscareLocal("rbxassetid://126754882337711","rbxassetid://138873214826309") end end
+    FuncoesADMChat.jumps2 = function(a) if DeveAfetar(a) then CriarJumpscareLocal("rbxassetid://86379969987314","rbxassetid://143942090") end end
+    FuncoesADMChat.jumps3 = function(a) if DeveAfetar(a) then CriarJumpscareLocal("rbxassetid://127382022168206","rbxassetid://143942090") end end
+    FuncoesADMChat.jumps4 = function(a) if DeveAfetar(a) then CriarJumpscareLocal("rbxassetid://95973611964555","rbxassetid://138873214826309") end end
+    FuncoesADMChat.therakejumpscare = function(a) if DeveAfetar(a) then TheRakeJumpscare() end end
+    FuncoesADMChat.animejumpscare = function(a)
+        if not DeveAfetar(a) then return end
+        task.spawn(function()
+            pcall(function()
+                local gui = Instance.new("ScreenGui", CoreGui)
+                gui.Name = "AnimeJumpscare"; gui.ResetOnSpawn = false
+                gui.IgnoreGuiInset = true; gui.DisplayOrder = 2147483647
+                local bg = Instance.new("Frame", gui)
+                bg.Size = UDim2.fromScale(1,1); bg.BackgroundColor3 = Color3.new(1,1,1)
+                bg.BorderSizePixel = 0
+                local img = Instance.new("ImageLabel", gui)
+                img.AnchorPoint = Vector2.new(0.5,0.5)
+                img.Position = UDim2.fromScale(0.5,0.5)
+                img.Size = UDim2.fromScale(1,1); img.BackgroundTransparency = 1
+                img.Image = "rbxassetid://84838094344701"
+                local s1 = Instance.new("Sound", gui)
+                s1.SoundId = "rbxassetid://82719020266339"; s1.Volume = 1
+                s1:Play()
+                task.delay(2.8, function() if img.Parent then img.Image = "rbxassetid://95558068230459" end end)
+                s1.Ended:Connect(function() if gui and gui.Parent then gui:Destroy() end end)
+            end)
+        end)
+    end
+    FuncoesADMChat.pararjumpscare = function(a)
+        if not DeveAfetar(a) then return end
+        pcall(function()
+            local gui = CoreGui:FindFirstChild("AnimeJumpscare")
+            if gui then gui:Destroy() end
+        end)
+    end
+    FuncoesADMChat.goner = function(a) if DeveAfetar(a) then TransformIntoGoner() end end
+
+    -- LISTENER DE CHAT (ÚNICO SYNC AGORA)
+    local function ProcessarMensagemRecebida(msg, senderName)
+        if not msg or msg:sub(1,1) ~= "/" then return end
+
+        -- /aviso <mensagem>
+        local avisoMsg = msg:match("^/aviso%s+(.+)$")
+        if avisoMsg then
+            CriarAnuncioBonito(senderName or "JV HUB ADM", avisoMsg)
+            return
+        end
+
+        -- /ch <target> <mensagem>
+        local chAlvo, chMsg = msg:match("^/ch%s+(%S+)%s+(.+)$")
+        if chAlvo and chMsg then
+            if string.lower(chAlvo) == string.lower(LocalPlayer.Name) then
+                pcall(function()
+                    local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+                        or TextChatService.TextChannels:GetChildren()[1]
+                    if channel then channel:SendAsync(chMsg) end
+                end)
+            end
+            return
+        end
+
+        -- /verifique
+        if msg:lower():match("^/verifique") then
+            FuncoesADMChat.verifique()
+            return
+        end
+
+        -- /<comando> <alvo>
+        local cmdNome, alvo = msg:match("^/(%S+)%s*(%S*)")
+        if not cmdNome then return end
+        cmdNome = string.lower(cmdNome)
+        if alvo == "" or not alvo then alvo = "todos" end
+
+        if FuncoesADMChat[cmdNome] then
+            FuncoesADMChat[cmdNome](alvo)
+            return
+        end
+        local idNum = IDsPorNome[cmdNome]
+        if idNum then
+            ExecutarComandoComFuncaoReal(idNum, alvo)
+        end
+    end
+
+    pcall(function()
+        if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+            TextChatService.MessageReceived:Connect(function(m)
+                if m.TextSource then
+                    local p = Players:GetPlayerByUserId(m.TextSource.UserId)
+                    if p then ProcessarMensagemRecebida(m.Text, p.Name) end
+                end
+            end)
+        end
+    end)
+    pcall(function()
+        for _, p in ipairs(Players:GetPlayers()) do
+            p.Chatted:Connect(function(msg) ProcessarMensagemRecebida(msg, p.Name) end)
+        end
+        Players.PlayerAdded:Connect(function(p)
+            p.Chatted:Connect(function(msg) ProcessarMensagemRecebida(msg, p.Name) end)
+        end)
+    end)
+
+    -- ENVIAR NO CHAT
+    local function EnviarNoChat(comandoTexto)
+        pcall(function()
+            if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+                local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+                if channel then channel:SendAsync(comandoTexto) end
+            else
+                local sayMsg = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+                    and ReplicatedStorage.DefaultChatSystemChatEvents:FindFirstChild("SayMessageRequest")
+                if sayMsg then sayMsg:FireServer(comandoTexto, "All") end
+            end
+        end)
+    end
+
+    -- INTERFACE
+    local Window = WindUI:CreateWindow({
+        Title = "🚀 JV HUB ADM - Brookhaven Edition 🚀",
+        Icon = "rocket", Author = "jotinha12hr2", Folder = "JVHubMain",
+        Size = UDim2.fromOffset(600,450), Transparent = true,
+        Theme = "Indigo", SideBarWidth = 180, HasOutline = true,
+    })
+
+    -- ABA 1: Comandos (100)
+    local TabAdmin = Window:Tab({ Title = "Comandos (100)", Icon = "users" })
+    local selectedTarget = "todos"
+    local playerNames = {"todos"}
+    for _, p in ipairs(Players:GetPlayers()) do table.insert(playerNames, p.Name) end
+    local targetDropdown = TabAdmin:Dropdown({
+        Title = "Selecionar Alvo", Values = playerNames, Multi = false,
+        Callback = function(o) selectedTarget = o end
+    })
+    Players.PlayerAdded:Connect(function(p) table.insert(playerNames,p.Name); targetDropdown:SetValues(playerNames) end)
+    Players.PlayerRemoving:Connect(function(p)
+        for i,n in ipairs(playerNames) do if n == p.Name then table.remove(playerNames,i); break end end
+        targetDropdown:SetValues(playerNames)
+    end)
+
+    local comandosLista = {
+        "1. Expansão de Domínio","2. Remover Domínio","3. Backrooms","4. Matar Alvo",
+        "5. Matar Plus","6. Kickar Alvo","7. Congelar Freezer","8. Descongelar Alvo",
+        "9. Jail Cima","10. Jail Baixo","11. Jail Frente","12. Jail Trás",
+        "13. Jail Direito","14. Jail Esquerdo","15. Remover Jail","16. Modo Deus",
+        "17. Remover Deus","18. Pulo Infinito On","19. Pulo Infinito Off","20. Velocidade 50",
+        "21. Velocidade 100","22. Velocidade 200","23. Velocidade Normal","24. Força Pulo 100",
+        "25. Força Pulo 300","26. Força Pulo 50","27. Ativar Noclip","28. Desativar Noclip",
+        "29. Ficar Invisível","30. Ficar Visível","31. Iniciar Voo","32. Parar Voo",
+        "33. Forçar Sentar","34. Curar Vida","35. Adicionar Fogo","36. Remover Fogo",
+        "37. Adicionar Brilhos","38. Remover Brilhos","39. Adicionar Fumaça","40. Remover Fumaça",
+        "41. Gravidade Zero","42. Gravidade Média","43. Gravidade Padrão","44. Iluminação Max",
+        "45. Remover Neblina","46. Definir Noite","47. Definir Dia","48. Pôr do Sol",
+        "49. ESP Jogadores On","50. ESP Jogadores Off","51. Cores Rainbow On","52. Cores Rainbow Off",
+        "53. Zoom Distância 50","54. Zoom Distância 400","55. Zoom Distância 1000","56. Campo Visão 70",
+        "57. Campo Visão 120","58. Campo Visão 90","59. Otimizar FPS","60. Receber Ferramenta",
+        "61. Limpar Mochila","62. Travar Plataforma","63. Destravar Plataforma","64. Altura Quadril Alta",
+        "65. Altura Quadril Baixa","66. Gerar Explosão","67. Inserir Sparkle","68. Despir Roupas",
+        "69. Despir Acessórios","70. Vida Máxima Total","71. Focar Câmera","72. Teleportar Para Cima",
+        "73. Teleportar Para Baixo","74. Teleportar Frente","75. Teleportar Trás","76. Travar Rotação",
+        "77. Destravar Rotação","78. Horário Manhã","79. Horário Meio-Dia","80. Horário Fim-Tarde",
+        "81. Horário Meia-Noite","82. Puxar Todos","83. Ghost Meio-Transparente","84. Ghost Sólido",
+        "85. Câmera Clássica","86. Câmera Primeira Pessoa","87. Visão Estreita","88. Visão Panorâmica",
+        "89. Visão Microscópica","90. Offset Câmera Cima","91. Offset Câmera Zero","92. Offset Câmera Lado",
+        "93. Impulso Vertical","94. Impulso Horizontal","95. Giroscópio Ativo","96. Giroscópio Parado",
+        "97. Lanterna Pessoal On","98. Lanterna Pessoal Off","99. Núcleo Interno On","100. Núcleo Interno Off"
+    }
+    for i, nome in ipairs(comandosLista) do
+        TabAdmin:Button({
+            Title = nome,
+            Callback = function()
+                EnviarNoChat("/" .. NomesComandos[i] .. " " .. selectedTarget)
+                ExecutarComandoComFuncaoReal(i, selectedTarget)
+            end
+        })
+    end
+
+    -- ABA 2: Comandos ADM (via CHAT) — SEM DUPLICADOS DA ABA 1
+    local TabADM = Window:Tab({ Title = "Comandos ADM", Icon = "shield" })
+    local admTargetName = ""
+    local admDropdown = TabADM:Dropdown({
+        Title = "Selecionar Jogador", Values = playerNames,
+        Multi = false, AllowNone = true,
+        Callback = function(o) if o then admTargetName = o end end
+    })
+    Players.PlayerAdded:Connect(function() task.wait(0.5); admDropdown:SetValues(playerNames) end)
+    Players.PlayerRemoving:Connect(function() task.wait(0.2); admDropdown:SetValues(playerNames) end)
+
+    local function EnviarADM(nomeCmd)
+        if not admTargetName or admTargetName == "" then return end
+        EnviarNoChat("/" .. nomeCmd .. " " .. admTargetName)
+    end
+
+    TabADM:Section({ Title = "Administração", TextXAlignment = "Left", TextSize = 17 })
+    TabADM:Button({ Title = "/verifique", Desc = "Marca jogadores JV HUB ADM Users", Callback = function()
+        EnviarNoChat("/verifique")
+        FuncoesADMChat.verifique()
+    end })
+
+    -- Comandos exclusivos da ADM (sem duplicar os 100 da aba 1)
+    local admComandos = {
+        {cmd="fling",desc="Arremessa o jogador"},
+        {cmd="unfreeze",desc="Descongela o jogador"},
+        {cmd="jail",desc="Prende o jogador em jaula"},
+        {cmd="unjail",desc="Remove a jaula do jogador"},
+        {cmd="jailinvisible",desc="Prende o jogador em jaula invisível"},
+        {cmd="unjailinvisible",desc="Remove a jaula invisível"},
+        {cmd="explode",desc="Explode o jogador"},
+        {cmd="bring",desc="Puxa você até o autor"},
+        {cmd="tptroll",desc="Troleia com teleporte"},
+        {cmd="float",desc="Faz o jogador flutuar e morrer"},
+        {cmd="lag",desc="Causa lag no jogador"},
+        {cmd="castigo",desc="Manda o jogador para o castigo"},
+        {cmd="descastigo",desc="Remove o jogador do castigo"},
+        {cmd="loopkill",desc="Mata em loop"},
+        {cmd="unloopkill",desc="Para o loop kill"},
+        {cmd="loopbring",desc="Traz em loop"},
+        {cmd="unloopbring",desc="Para o loop bring"},
+        {cmd="loopsit",desc="Senta em loop"},
+        {cmd="unloopsit",desc="Para o loop sit"},
+        {cmd="loopfire",desc="Fogo em loop"},
+        {cmd="unloopfire",desc="Para o loop fire"},
+    }
+    for _, e in ipairs(admComandos) do
+        TabADM:Button({ Title = "/" .. e.cmd, Desc = e.desc, Callback = function() EnviarADM(e.cmd) end })
+    end
+
+    TabADM:Section({ Title = "Floppa", TextXAlignment = "Left", TextSize = 17 })
+    TabADM:Button({ Title = "/flopparain", Desc = "Ativa chuva de Floppas", Callback = function() EnviarADM("flopparain") end })
+    TabADM:Button({ Title = "/unfloppa", Desc = "Para a chuva de Floppas", Callback = function() EnviarADM("unfloppa") end })
+
+    TabADM:Section({ Title = "Domain Expansion", TextXAlignment = "Left", TextSize = 17 })
+    TabADM:Button({ Title = "/domainexpansion", Desc = "Ativa o Domain Expansion", Callback = function() EnviarADM("domainexpansion") end })
+
+    TabADM:Section({ Title = "Jumpscares", TextXAlignment = "Left", TextSize = 17 })
+    for _, j in ipairs({
+        {n="jumps1",d="Jumpscare 1"},{n="jumps2",d="Jumpscare 2"},
+        {n="jumps3",d="Jumpscare 3"},{n="jumps4",d="Jumpscare 4"},
+        {n="therakejumpscare",d="The Rake Jumpscare"},
+        {n="animejumpscare",d="Anime Jumpscare"},
+        {n="pararjumpscare",d="Para o Anime Jumpscare"}
+    }) do
+        TabADM:Button({ Title = "/" .. j.n, Desc = j.d, Callback = function() EnviarADM(j.n) end })
+    end
+
+    TabADM:Section({ Title = "Morphs", TextXAlignment = "Left", TextSize = 17 })
+    TabADM:Button({ Title = "/goner", Desc = "Transforma no Goner", Callback = function() EnviarADM("goner") end })
+
+    TabADM:Section({ Title = "Sistema de Avisos", TextXAlignment = "Left", TextSize = 17 })
+    local admTextoAviso = ""
+    TabADM:Input({
+        Title = "Mensagem do Aviso", Desc = "Mensagem enviada a todos",
+        Default = "", Placeholder = "Ex: Servidor será reiniciado em 5 minutos...",
+        Callback = function(txt) admTextoAviso = txt end
+    })
+    TabADM:Button({ Title = "Enviar Aviso", Desc = "Envia o aviso via chat", Callback = function()
+        if not admTextoAviso or admTextoAviso == "" then warn("Digite uma mensagem!") return end
+        EnviarNoChat("/aviso " .. admTextoAviso)
+        CriarAnuncioBonito(LocalPlayer.Name, admTextoAviso)
+    end })
+
+    TabADM:Section({ Title = "Forçar Chat (/ch)", TextXAlignment = "Left", TextSize = 17 })
+    local admChTarget = ""
+    local admChDropdown = TabADM:Dropdown({
+        Title = "Selecionar Jogador", Values = playerNames,
+        Multi = false, AllowNone = true,
+        Callback = function(o) if o then admChTarget = o end end
+    })
+    Players.PlayerAdded:Connect(function() task.wait(0.5); admChDropdown:SetValues(playerNames) end)
+    Players.PlayerRemoving:Connect(function() task.wait(0.2); admChDropdown:SetValues(playerNames) end)
+
+    local admChMsg = ""
+    TabADM:Input({
+        Title = "Mensagem", Desc = "Mensagem que o jogador vai mandar",
+        Default = "", Placeholder = "Ex: oi gente tudo bem?",
+        Callback = function(txt) admChMsg = txt end
+    })
+    TabADM:Button({ Title = "Enviar /ch", Desc = "Força o jogador a mandar no chat", Callback = function()
+        if not admChTarget or admChTarget == "" then warn("Selecione um jogador!") return end
+        if not admChMsg or admChMsg == "" then warn("Digite uma mensagem!") return end
+        EnviarNoChat("/ch " .. admChTarget .. " " .. admChMsg)
+    end })
+
+    Window:SelectTab(1)
+    WindUI:Notify({
+        Title = "JV HUB ADM",
+        Content = "Chat Sync ativado • 100 + comandos ADM carregados",
+        Duration = 5
+    })
+end
+
+CriarMenuKeyNormal()
